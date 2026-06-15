@@ -1,0 +1,8 @@
+services:
+  gateway:
+    build:
+      context: .
+      dockerfile: infra/docker/Dockerfile
+    ports:
+      - "8080:8080"
+

@@ -1,11 +1,13 @@
 # Terraform Notes
 
-This skeleton provisions the base AWS resources needed to host the container:
+This skeleton provisions an ECS Fargate service, CloudWatch log group, security group,
+and execution role for the gateway.
 
-- ECR repository
-- ECS cluster
-- CloudWatch log group
-- Security group
+```bash
+cp terraform.tfvars.example terraform.tfvars
+terraform init
+terraform plan
+```
 
-It stays intentionally small so the repository remains runnable without cloud credentials.
+Use a private load balancer, WAF, and auth layer before treating the service as production-ready.
 

@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: llm-eval-regression-gateway
+  labels:
+    app: llm-eval-regression-gateway
 spec:
   replicas: 2
   selector:
@@ -14,32 +16,32 @@ spec:
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/path: /metrics
-        prometheus.io/port: "8000"
+        prometheus.io/port: "8080"
     spec:
+      securityContext:
+        runAsNonRoot: true
       containers:
         - name: api
           image: ghcr.io/nagadeepak1998/llm-eval-regression-gateway:latest
           ports:
-            - containerPort: 8000
+            - containerPort: 8080
           readinessProbe:
             httpGet:
               path: /health
-              port: 8000
+              port: 8080
           livenessProbe:
             httpGet:
               path: /health
-              port: 8000
+              port: 8080
           resources:
             requests:
               cpu: 100m
               memory: 128Mi
             limits:
               cpu: 500m
-              memory: 512Mi
+              memory: 256Mi
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:
               drop: ["ALL"]
-            runAsNonRoot: true
-            runAsUser: 1000
 

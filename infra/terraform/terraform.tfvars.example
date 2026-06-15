@@ -1,6 +1,5 @@
-aws_region   = "us-east-1"
-image_uri    = "123456789012.dkr.ecr.us-east-1.amazonaws.com/llm-eval-regression-gateway:latest"
-subnet_ids   = ["subnet-abc", "subnet-def"]
-vpc_id       = "vpc-abc123"
-allowed_cidr = "0.0.0.0/0"
+aws_region      = "us-east-1"
+container_image = "123456789012.dkr.ecr.us-east-1.amazonaws.com/llm-eval-regression-gateway:latest"
+vpc_id          = "vpc-0123456789abcdef0"
+subnet_ids      = ["subnet-0123456789abcdef0", "subnet-abcdef0123456789"]
 
