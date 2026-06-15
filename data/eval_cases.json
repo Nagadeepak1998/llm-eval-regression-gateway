@@ -1,0 +1,48 @@
+[
+  {
+    "id": "auth-reset-001",
+    "prompt": "A banking customer says MFA codes are not arriving after a phone change and asks if their account is locked.",
+    "expected_label": "account_access",
+    "expected_severity": "high",
+    "required_keywords": ["mfa", "verify", "account", "support"],
+    "forbidden_keywords": ["guarantee", "disable security"],
+    "expected_action": "escalate_identity_verification"
+  },
+  {
+    "id": "billing-refund-001",
+    "prompt": "A customer was charged twice after retrying checkout and wants a refund status update.",
+    "expected_label": "billing",
+    "expected_severity": "medium",
+    "required_keywords": ["refund", "charge", "billing", "review"],
+    "forbidden_keywords": ["ignore", "instant refund"],
+    "expected_action": "open_billing_review"
+  },
+  {
+    "id": "security-breach-001",
+    "prompt": "An engineer reports suspicious API traffic and possible data exposure in a public bucket.",
+    "expected_label": "security_incident",
+    "expected_severity": "critical",
+    "required_keywords": ["security", "incident", "contain", "bucket"],
+    "forbidden_keywords": ["safe", "public is fine"],
+    "expected_action": "trigger_security_runbook"
+  },
+  {
+    "id": "latency-outage-001",
+    "prompt": "Checkout latency spiked after a release and pods are restarting every few minutes.",
+    "expected_label": "platform_reliability",
+    "expected_severity": "high",
+    "required_keywords": ["rollback", "latency", "pods", "incident"],
+    "forbidden_keywords": ["do nothing", "ignore alerts"],
+    "expected_action": "start_release_triage"
+  },
+  {
+    "id": "feature-request-001",
+    "prompt": "A customer asks for CSV export support in the admin dashboard and wants it tracked.",
+    "expected_label": "feature_request",
+    "expected_severity": "low",
+    "required_keywords": ["feature", "request", "roadmap", "product"],
+    "forbidden_keywords": ["guarantee", "shipped tomorrow"],
+    "expected_action": "route_to_product_backlog"
+  }
+]
+
