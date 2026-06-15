@@ -3,7 +3,9 @@
 .ruff_cache/
 __pycache__/
 *.pyc
+*.egg-info/
+build/
+dist/
 reports/*.json
 !reports/.gitkeep
 .DS_Store
-

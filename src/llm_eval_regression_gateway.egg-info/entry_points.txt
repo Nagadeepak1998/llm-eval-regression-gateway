@@ -1,2 +1,0 @@
-[console_scripts]
-llm-eval-gateway = llm_eval_regression_gateway.cli:main
