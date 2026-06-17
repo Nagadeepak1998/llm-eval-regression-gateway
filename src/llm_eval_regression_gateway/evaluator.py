@@ -80,6 +80,8 @@ def compare_eval_suites(
 ) -> dict:
     baseline_report = run_eval_suite(cases, baseline_model)
     candidate_report = run_eval_suite(cases, candidate_model)
+    baseline_results = {result["case_id"]: result for result in baseline_report["results"]}
+    candidate_results = {result["case_id"]: result for result in candidate_report["results"]}
 
     baseline_failed = set(baseline_report["summary"]["failed_cases"])
     candidate_failed = set(candidate_report["summary"]["failed_cases"])
@@ -104,6 +106,37 @@ def compare_eval_suites(
         and avg_score_delta >= min_avg_score_delta
         and avg_latency_delta_ms <= max_avg_latency_delta_ms
     )
+    regression_reasons: list[str] = []
+    if len(new_failures) > max_new_failures:
+        regression_reasons.append(
+            f"new failures {len(new_failures)} exceeded budget {max_new_failures}"
+        )
+    if avg_score_delta < min_avg_score_delta:
+        regression_reasons.append(
+            f"avg score delta {avg_score_delta} fell below budget {min_avg_score_delta}"
+        )
+    if avg_latency_delta_ms > max_avg_latency_delta_ms:
+        regression_reasons.append(
+            f"avg latency delta {avg_latency_delta_ms}ms exceeded budget {max_avg_latency_delta_ms}ms"
+        )
+
+    case_deltas = [
+        {
+            "case_id": case.case_id,
+            "baseline_passed": baseline_results[case.case_id]["passed"],
+            "candidate_passed": candidate_results[case.case_id]["passed"],
+            "score_delta": round(
+                candidate_results[case.case_id]["score"] - baseline_results[case.case_id]["score"],
+                3,
+            ),
+            "latency_delta_ms": round(
+                candidate_results[case.case_id]["latency_ms"]
+                - baseline_results[case.case_id]["latency_ms"],
+                2,
+            ),
+        }
+        for case in cases
+    ]
 
     return {
         "baseline": baseline_report,
@@ -116,10 +149,12 @@ def compare_eval_suites(
             "pass_rate_delta": pass_rate_delta,
             "avg_score_delta": avg_score_delta,
             "avg_latency_delta_ms": avg_latency_delta_ms,
+            "regression_reasons": regression_reasons,
             "regression_budget": {
                 "max_new_failures": max_new_failures,
                 "min_avg_score_delta": min_avg_score_delta,
                 "max_avg_latency_delta_ms": max_avg_latency_delta_ms,
             },
+            "case_deltas": case_deltas,
         },
     }

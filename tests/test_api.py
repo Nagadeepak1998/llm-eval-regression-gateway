@@ -27,6 +27,7 @@ def test_compare_endpoint_returns_regression_budget_result() -> None:
     assert payload["decision"] == "fail"
     assert payload["new_failures"] == ["terraform-public-bucket"]
     assert payload["baseline_model"] == "baseline"
+    assert payload["markdown_output"].endswith("reports/compare.md")
 
 
 def test_metrics_endpoint_exposes_counters() -> None:

@@ -10,7 +10,7 @@ from app.metrics import metrics
 from app.schemas import CompareRequest, CompareResponse, EvalRequest, EvalResponse
 from llm_eval_regression_gateway.eval_loader import load_eval_cases
 from llm_eval_regression_gateway.evaluator import compare_eval_suites, run_eval_suite
-from llm_eval_regression_gateway.reporting import write_report
+from llm_eval_regression_gateway.reporting import write_compare_markdown, write_report
 
 app = FastAPI(title=APP_NAME, version="0.1.0")
 
@@ -50,10 +50,12 @@ def compare_release(request: CompareRequest) -> CompareResponse:
         max_avg_latency_delta_ms=request.max_avg_latency_delta_ms,
     )
     output_path = write_report(report, REPORT_PATH.with_name("compare.json"))
+    markdown_path = write_compare_markdown(report, REPORT_PATH.with_name("compare.md"))
     failed = report["comparison"]["decision"] != "pass"
     metrics.record_compare(report["comparison"]["avg_score_delta"], failed)
     return CompareResponse(
         report_path=str(output_path),
+        markdown_output=str(markdown_path),
         baseline_model=request.baseline_model,
         candidate_model=request.candidate_model,
         **report["comparison"],

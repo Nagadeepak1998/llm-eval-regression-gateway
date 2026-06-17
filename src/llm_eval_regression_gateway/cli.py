@@ -34,7 +34,7 @@ def build_parser() -> argparse.ArgumentParser:
     compare_parser.add_argument("--min-avg-score-delta", type=float, default=-0.05)
     compare_parser.add_argument("--max-avg-latency-delta-ms", type=float, default=25.0)
     compare_parser.add_argument("--output", type=Path, default=Path("reports/compare.json"))
-    compare_parser.add_argument("--markdown-output", type=Path)
+    compare_parser.add_argument("--markdown-output", type=Path, default=Path("reports/compare.md"))
     return parser
 
 
@@ -59,9 +59,17 @@ def main() -> int:
             max_avg_latency_delta_ms=args.max_avg_latency_delta_ms,
         )
         path = write_report(report, args.output)
-        if args.markdown_output:
-            write_compare_markdown(report, args.markdown_output)
-        print(json.dumps({"output": str(path), "comparison": report["comparison"]}, indent=2))
+        markdown_path = write_compare_markdown(report, args.markdown_output)
+        print(
+            json.dumps(
+                {
+                    "output": str(path),
+                    "markdown_output": str(markdown_path),
+                    "comparison": report["comparison"],
+                },
+                indent=2,
+            )
+        )
         return 0 if report["comparison"]["decision"] == "pass" else 1
     return 1
 

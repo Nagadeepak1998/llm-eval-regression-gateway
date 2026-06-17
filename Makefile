@@ -5,7 +5,7 @@ PYTEST := $(VENV)/bin/pytest
 RUFF := $(VENV)/bin/ruff
 UVICORN := $(VENV)/bin/uvicorn
 
-.PHONY: setup test lint run eval docker-build docker-run clean
+.PHONY: setup test lint run eval compare docker-build docker-run clean
 
 setup:
 	$(PYTHON) -m venv $(VENV)
@@ -22,7 +22,10 @@ run:
 	PYTHONPATH=src:. $(UVICORN) app.main:app --host 0.0.0.0 --port 8080
 
 eval:
-	PYTHONPATH=src:. $(VENV)/bin/llm-eval-gateway evaluate --model candidate --output reports/latest.json
+	PYTHONPATH=src:. $(VENV)/bin/llm-eval-gateway evaluate --model candidate --output reports/latest.json --markdown-output reports/latest.md --junit-output reports/latest.xml
+
+compare:
+	PYTHONPATH=src:. $(VENV)/bin/llm-eval-gateway compare --output reports/compare.json --markdown-output reports/compare.md
 
 docker-build:
 	docker build -f infra/docker/Dockerfile -t llm-eval-regression-gateway:local .

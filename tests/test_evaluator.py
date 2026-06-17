@@ -22,3 +22,6 @@ def test_compare_reports_new_failures_and_deltas() -> None:
     assert comparison["recovered_cases"] == []
     assert comparison["pass_rate_delta"] == -0.25
     assert comparison["avg_score_delta"] == -0.25
+    assert "new failures 1 exceeded budget 0" in comparison["regression_reasons"]
+    assert "avg score delta -0.25 fell below budget -0.05" in comparison["regression_reasons"]
+    assert any(delta["case_id"] == "terraform-public-bucket" for delta in comparison["case_deltas"])

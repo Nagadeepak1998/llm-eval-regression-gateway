@@ -58,6 +58,15 @@ def write_compare_markdown(report: dict, output_path: Path) -> Path:
         f"- Average score delta: `{comparison['avg_score_delta']}`",
         f"- Average latency delta ms: `{comparison['avg_latency_delta_ms']}`",
         "",
+        "## Regression Budget",
+        "",
+        f"- Max new failures: `{comparison['regression_budget']['max_new_failures']}`",
+        f"- Min average score delta: `{comparison['regression_budget']['min_avg_score_delta']}`",
+        (
+            "- Max average latency delta ms: "
+            f"`{comparison['regression_budget']['max_avg_latency_delta_ms']}`"
+        ),
+        "",
         "## New Failures",
         "",
         *[f"- `{case_id}`" if case_id != "None" else "- None" for case_id in new_failures],
@@ -65,6 +74,14 @@ def write_compare_markdown(report: dict, output_path: Path) -> Path:
         "## Recovered Cases",
         "",
         *[f"- `{case_id}`" if case_id != "None" else "- None" for case_id in recovered_cases],
+        "",
+        "## Budget Outcome",
+        "",
+        *(
+            [f"- {reason}" for reason in comparison["regression_reasons"]]
+            if comparison["regression_reasons"]
+            else ["- No budget thresholds were exceeded."]
+        ),
         "",
     ]
     output_path.write_text("\n".join(lines), encoding="utf-8")
