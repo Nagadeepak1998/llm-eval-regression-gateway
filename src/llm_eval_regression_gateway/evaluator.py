@@ -68,3 +68,58 @@ def run_eval_suite(cases: list[EvalCase], model_name: str) -> dict:
             for result in results
         ],
     }
+
+
+def compare_eval_suites(
+    cases: list[EvalCase],
+    baseline_model: str = "baseline",
+    candidate_model: str = "candidate",
+    max_new_failures: int = 0,
+    min_avg_score_delta: float = -0.05,
+    max_avg_latency_delta_ms: float = 25.0,
+) -> dict:
+    baseline_report = run_eval_suite(cases, baseline_model)
+    candidate_report = run_eval_suite(cases, candidate_model)
+
+    baseline_failed = set(baseline_report["summary"]["failed_cases"])
+    candidate_failed = set(candidate_report["summary"]["failed_cases"])
+    new_failures = sorted(candidate_failed - baseline_failed)
+    recovered_cases = sorted(baseline_failed - candidate_failed)
+
+    pass_rate_delta = round(
+        candidate_report["summary"]["pass_rate"] - baseline_report["summary"]["pass_rate"],
+        3,
+    )
+    avg_score_delta = round(
+        candidate_report["summary"]["avg_score"] - baseline_report["summary"]["avg_score"],
+        3,
+    )
+    avg_latency_delta_ms = round(
+        candidate_report["summary"]["avg_latency_ms"] - baseline_report["summary"]["avg_latency_ms"],
+        2,
+    )
+
+    regression_budget_passed = (
+        len(new_failures) <= max_new_failures
+        and avg_score_delta >= min_avg_score_delta
+        and avg_latency_delta_ms <= max_avg_latency_delta_ms
+    )
+
+    return {
+        "baseline": baseline_report,
+        "candidate": candidate_report,
+        "comparison": {
+            "decision": "pass" if regression_budget_passed else "fail",
+            "new_failures": new_failures,
+            "recovered_cases": recovered_cases,
+            "new_failure_count": len(new_failures),
+            "pass_rate_delta": pass_rate_delta,
+            "avg_score_delta": avg_score_delta,
+            "avg_latency_delta_ms": avg_latency_delta_ms,
+            "regression_budget": {
+                "max_new_failures": max_new_failures,
+                "min_avg_score_delta": min_avg_score_delta,
+                "max_avg_latency_delta_ms": max_avg_latency_delta_ms,
+            },
+        },
+    }
